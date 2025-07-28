@@ -121,3 +121,13 @@ The codebase is modular, with key functions for extraction and processing:
 
 TinyBERT’s balance of size **(14.5mb)**, performance, and ease of use, coupled with its **90% accuracy**, made it the ideal choice for this labeling task.
  
+
+### Build Command
+```bash
+docker build --platform linux/amd64 -t <reponame.someidentifier> .
+```
+
+### Run Command
+```bash
+docker run --rm -v $(pwd)/input:/app/input:ro -v $(pwd)/output/repoidentifier/:/app/output --network none <reponame.someidentifier>
+```
