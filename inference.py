@@ -46,9 +46,9 @@ class HeaderDataset(Dataset):
         }
     
 class ImprovedHeaderClassifier(nn.Module):
-    def __init__(self, pretrained=MODEL_NAME, n_feats=6, n_classes=4, dropout=0.2):
+    def __init__(self, pretrained=MODEL_DIR, n_feats=6, n_classes=4, dropout=0.2):
         super().__init__()
-        self.bert = AutoModel.from_pretrained(pretrained)
+        self.bert = AutoModel.from_pretrained(pretrained, local_files_only=True)
         hidden = self.bert.config.hidden_size
         self.feat_proj = nn.Sequential(
             nn.Linear(n_feats, hidden//2), nn.ReLU(), nn.BatchNorm1d(hidden//2)
@@ -65,10 +65,11 @@ class ImprovedHeaderClassifier(nn.Module):
         return self.classifier(x)
 
 # 5. Load & Inference Snippet
-tokenizer = AutoTokenizer.from_pretrained(MODEL_DIR)
-model = ImprovedHeaderClassifier().to(DEVICE)
-state = torch.load(os.path.join(MODEL_DIR,'best_model.pt'), map_location=DEVICE)
-model.load_state_dict(state); model.eval()
+
+# Force offline loading
+tokenizer = AutoTokenizer.from_pretrained(MODEL_DIR, local_files_only=True)
+model = ImprovedHeaderClassifier(pretrained=MODEL_DIR).to(DEVICE)
+model.eval()
 
 import numpy as np
 # Read dataset4.csv and extract required columns
